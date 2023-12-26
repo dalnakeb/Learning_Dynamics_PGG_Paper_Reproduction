@@ -38,7 +38,7 @@ if __name__ == "__main__":
 
     #infiniteWellMixed = InfiniteWellMixed(egt.behaviors.NormalForm.TwoActions.Cooperator(),
     #                                      egt.behaviors.NormalForm.TwoActions.Defector(), payoffMatrix)
-    #infiniteWellMixed.plot()
+    #infiniteWellMixed.plot(infiniteWellMixed.simulate())
 
     #regularGraph = RegularGraph(populationSize, transientGenNum, genNum, graphNum, runNum, initCooperatorsFraction,
     #                            averageGraphConnectivity, contributionValue, contributionModel)
