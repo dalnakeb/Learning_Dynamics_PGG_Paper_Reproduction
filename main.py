@@ -35,6 +35,9 @@ if __name__ == "__main__":
     averageGraphConnectivity = 4
     contributionValue = 1
     contributionModel = 0  # (0: cost per game, 1: cost per individual)
+    evolutionModel = 0  # (0: pairwise comparison, 1: death-birth , 2: birth-death)
+    updateStrategy = 0  # (0: synchronous, 1: asynchronous)
+    mutations = False  # true if mutations are allowed
 
     #infiniteWellMixed = InfiniteWellMixed(egt.behaviors.NormalForm.TwoActions.Cooperator(),
     #                                      egt.behaviors.NormalForm.TwoActions.Defector(), payoffMatrix)

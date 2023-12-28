@@ -13,7 +13,7 @@ class RegularGraph:
                  initCooperatorsFraction: float,
                  graphConnectivity: int,
                  contributionValue: int,
-                 contributionModel: int):
+                 contributionModel: int, evolutionModel: int, updateStrategy: int, mutations: bool):
         """
         :param populationSize:  number of nodes in the graph
         :param transientGenNum:  transient number of generations before taking data
@@ -24,6 +24,9 @@ class RegularGraph:
         :param graphConnectivity:  graph connectivity
         :param contributionValue:  contribution value
         :param contributionModel: (0: cost per game, 1: cost per individual)
+        :param evolutionModel: (0: pairwise comparison, 1: death-birth , 2: birth-death)
+        :param updateStrategy: (0: synchronous, 1: asynchronous)
+        :param mutations: true if mutations are allowed
         """
         self.populationSize = populationSize
         self.transientGenNum = transientGenNum
@@ -34,6 +37,10 @@ class RegularGraph:
         self.graphConnectivity = graphConnectivity
         self.contributionValue = contributionValue
         self.contributionModel = contributionModel
+        self.updateStrategy = updateStrategy
+        self.evolutionModel = evolutionModel
+        self.mutations = mutations
+
         self.r = 1
 
     def computeFitness(self, population, populationGraphIndices, node):
@@ -103,7 +110,6 @@ class RegularGraph:
                 maxPayoff += maxPayoff2
                 minPayoff += minPayoff2
 
-
         return fitness, minPayoff, maxPayoff
 
     def imitationProbability(self, population, populationGraphIndices, node, neighbor):
@@ -116,10 +122,17 @@ class RegularGraph:
         return (neighborFitness-nodeFitness) / M
 
     def nextGen(self, population, populationGraphIndices):
-        for node in populationGraphIndices.nodes():
-            neighbor = np.random.choice(list(populationGraphIndices.neighbors(node)))
-            if random.random() < self.imitationProbability(population, populationGraphIndices, node, neighbor):
-                population[node] = population[neighbor]
+        if self.evolutionModel == 0:  # pairwise comparison
+            for node in populationGraphIndices.nodes():
+                neighbor = np.random.choice(list(populationGraphIndices.neighbors(node)))
+                if random.random() < self.imitationProbability(population, populationGraphIndices, node, neighbor):
+                    population[node] = population[neighbor]
+
+        elif self.evolutionModel == 1:  # death-birth
+            pass
+
+        elif self.evolutionModel == 2:  # birth-death
+            pass
 
         return population
 
@@ -130,27 +143,33 @@ class RegularGraph:
         cooperators = np.ones(int(self.populationSize * self.initCooperatorsFraction))
         defectors = np.zeros(int(self.populationSize * (1 - self.initCooperatorsFraction)))
         populationOriginal = np.hstack((cooperators, defectors))
-        valuesPerGraph = np.zeros((self.graphNum, 2, self.genNum))
-        valuesPerRun = np.zeros((self.runNum, 2, self.genNum))
+        valuesPerGraph = np.zeros((self.graphNum, 2, self.genNum+1))
+        valuesPerRun = np.zeros((self.runNum, 2, self.genNum+1))
 
         for graph in range(self.graphNum):
             # Create graph representing the population indices (will be used to represent the structure)
             populationGraphIndices = nx.random_regular_graph(self.graphConnectivity, self.populationSize)
             # Create and shuffle population (0: D, 1:C)
-            population = np.copy(populationOriginal)
-            np.random.shuffle(population)
             ic(graph)
 
             for run in range(self.runNum):
-                #self.r = 1/self.genNum
+                self.r = 1
+
+                population = np.copy(populationOriginal)
+                np.random.shuffle(population)
                 for _ in range(self.transientGenNum):
                     self.nextGen(population, populationGraphIndices)
+                    self.r += (self.graphConnectivity) / (self.genNum)
+
+                valuesPerRun[run, 0, 0] = self.r / (self.graphConnectivity + 1)
+                valuesPerRun[run, 1, 0] = np.count_nonzero(population) / self.populationSize
 
                 for gen in range(self.genNum):
                     self.nextGen(population, populationGraphIndices)
-                    valuesPerRun[run, 0, gen] = self.r/(self.graphConnectivity + 1)
-                    valuesPerRun[run, 1, gen] = np.count_nonzero(population)
-#                    self.r += (self.graphConnectivity+1) / self.genNum
+                    self.r += (self.graphConnectivity) / (self.genNum)
+                    valuesPerRun[run, 0, gen+1] = self.r/(self.graphConnectivity + 1)
+                    valuesPerRun[run, 1, gen+1] = np.count_nonzero(population) / self.populationSize
+
 
             valuesPerGraph[graph] = np.mean(valuesPerRun, axis=0)
         simulationValuesForRegularGraph = np.mean(valuesPerGraph, axis=0)
@@ -167,6 +186,7 @@ class RegularGraph:
 
         simulationValuesForRegularGraphWithWealth = np.array([[], []])
         return simulationValuesForRegularGraphWithWealth
+
 
     def extractIndividuals(self, population, indices):
         return [population[i] for i in indices]

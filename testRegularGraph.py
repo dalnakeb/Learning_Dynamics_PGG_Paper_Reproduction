@@ -4,18 +4,21 @@ import matplotlib.pyplot as plt
 
 
 if __name__ == "__main__":
-    populationSize = 30
-    transientGenNum = 1
+    populationSize = 1000
+    transientGenNum = 10
     genNum = 10**2
-    graphNum = 4
-    runNum = 10
+    graphNum = 2
+    runNum = 3
     initCooperatorsFraction = 0.5
     averageGraphConnectivity = 4
     contributionValue = 1
-    contributionModel = 1  # (0: cost per game, 1: cost per individual)
+    contributionModel = 0  # (0: cost per game, 1: cost per individual)
+    evolutionModel = 0  # (0: pairwise comparison, 1: death-birth , 2: birth-death)
+    updateStrategy = 0  # (0: synchronous, 1: asynchronous)
+    mutations = False  # true if mutations are allowed
 
     regularGraph = RegularGraph(populationSize, transientGenNum, genNum, graphNum, runNum, initCooperatorsFraction,
-                                averageGraphConnectivity, contributionValue, contributionModel)
+                                averageGraphConnectivity, contributionValue, contributionModel, evolutionModel, updateStrategy, mutations)
 
     values = regularGraph.simulate()
 
@@ -24,7 +27,7 @@ if __name__ == "__main__":
     plt.ylabel('C fraction')
     plt.title('Plotting Data')
     plt.legend()
-    #plt.xlim(0, 1.1)
-    #plt.ylim(0, 1.1)
+    plt.xlim(0, 1.1)
+    plt.ylim(0, 1.1)
     plt.show()
 
