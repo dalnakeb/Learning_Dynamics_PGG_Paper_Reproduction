@@ -1,5 +1,7 @@
 import random
 import time
+from copy import copy
+
 import numpy as np
 from icecream import ic
 import networkx as nx
@@ -148,22 +150,22 @@ class RegularGraph:
         valuesPerRuns = np.zeros((self.runNum, 2, (self.graphConnectivity+1)*5 + - 1))  # number of fractions of r
         valuesPerGens = np.zeros(self.genNum)
 
-        for r in range(16, (self.graphConnectivity+1)*5+4):
+        for r in range(5, (self.graphConnectivity+1)*5+4):
             self.r = (r/5)
 
             for graph in range(self.graphNum):
                 # Create graph representing the population indices (will be used to represent the structure)
                 populationGraphIndices = nx.random_regular_graph(self.graphConnectivity, self.populationSize)
                 self.populationDict = {}
-                for node in populationGraphIndices.nodes():
+                for node in populationGraphIndices.nodes():  # for optimality reasons
                     self.populationDict[node] = list(populationGraphIndices.neighbors(node))
                 ic(graph)
 
                 for run in range(self.runNum):
-
                     # Create and shuffle population (0: D, 1:C)
-                    population = np.copy(populationOriginal)
+                    population = copy(populationOriginal)
                     random.shuffle(population)
+
                     for _ in range(self.transientGenNum):
                         self.nextGen(population)
 
@@ -173,7 +175,6 @@ class RegularGraph:
 
                     valuesPerRuns[run, 0, r-5] = self.r/(self.graphConnectivity + 1)
                     valuesPerRuns[run, 1, r-5] = np.mean(valuesPerGens)
-                    ic(r, valuesPerRuns[run, 1, r-5])
 
                 valuesPerGraphs[graph] = np.mean(valuesPerRuns, axis=0)
 

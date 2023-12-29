@@ -45,7 +45,7 @@ if __name__ == "__main__":
     #infiniteWellMixed.plot(simulationValuesForInfiniteWellMixed)
 
     #regularGraph = RegularGraph(populationSize, transientGenNum, genNum, graphNum, runNum, initCooperatorsFraction,
-    #                            averageGraphConnectivity, contributionValue, contributionModel)
+    #                            averageGraphConnectivity, contributionValue, contributionModel, evolutionModel, updateStrategy, mutations)
 
     #scaleFreeGraph = ScaleFreeGraph(populationSize, transientGenNum, genNum, graphNum, runNum, initCooperatorsFraction,
     #                                averageGraphConnectivity, contributionValue, contributionModel)
