@@ -6,15 +6,15 @@ import matplotlib.pyplot as plt
 
 
 if __name__ == "__main__":
-    populationSize = 5*10**1
-    transientGenNum = 2*10**2
-    genNum = 30**1
+    populationSize = 2*10**1
+    transientGenNum = 3*10**2
+    genNum = 2*10**1
     graphNum = 2
-    runNum = 10
+    runNum = 5
     initCooperatorsFraction = 0.5
     averageGraphConnectivity = 4
     contributionValue = 1
-    contributionModel = 1  # (0: cost per game, 1: cost per individual)
+    contributionModel = 0  # (0: cost per game, 1: cost per individual)
     evolutionModel = 0  # (0: pairwise comparison, 1: death-birth , 2: birth-death)
     updateStrategy = 0  # (0: synchronous, 1: asynchronous)
     mutations = False  # true if mutations are allowed

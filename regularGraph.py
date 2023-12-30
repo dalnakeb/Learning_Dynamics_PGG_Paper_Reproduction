@@ -6,7 +6,6 @@ import numpy as np
 from icecream import ic
 import networkx as nx
 
-
 class RegularGraph:
     """
     Class implementing a regular graph population.
@@ -43,7 +42,7 @@ class RegularGraph:
         self.evolutionModel = evolutionModel
         self.mutations = mutations
 
-        self.r = 0.8
+        self.r = 1
         self.populationDict = {}
 
     def computeFitness(self, population, node):
@@ -59,15 +58,15 @@ class RegularGraph:
 
             fitness += self.r * c / (k + 1) - population[node]
             minPayoff += self.r * (population[node]) / (k + 1) - population[node]
-            maxPayoff += self.r * (len(self.populationDict[node]) + population[node]) / (k + 1) - population[node]
+            maxPayoff += self.r * (len(neighborsIndices) + population[node]) / (k + 1) - population[node]
 
             for neighborIndex in neighborsIndices:
                 c = self.extractIndividuals(population, self.populationDict[neighborIndex]).count(1) + population[neighborIndex]
                 k = len(self.populationDict[neighborIndex])
 
                 fitness += self.r * c / (k + 1) - population[node]
-                minPayoff += self.r * (population[neighborIndex]) / (k + 1) - population[node]
-                maxPayoff += self.r * (len(self.populationDict[neighborIndex]) + population[neighborIndex]) / (k + 1) - population[node]
+                minPayoff += -population[node]
+                maxPayoff += self.r * (len(self.populationDict[neighborIndex]) + 1) / (k + 1) - population[node]
 
         else:  # cost per individual
             k_y = len(self.populationDict[node])
@@ -90,18 +89,17 @@ class RegularGraph:
 
             for neighborIndex in neighborsIndices:
                 neighborsIndices2 = self.populationDict[neighborIndex]
-                k_x = len(self.populationDict[neighborIndex])
+                k_x = len(neighborsIndices2)
                 fitness2 = self.r / (k_x + 1)
                 minPayoff2 = self.r / (k_x + 1)
                 maxPayoff2 = self.r / (k_x + 1)
 
                 totalContribution = (1 / (k_x + 1)) * population[neighborIndex] - (1 / (k_y + 1)) * population[node]
-                totalContributionMax = (1 / (k_x + 1)) * population[neighborIndex] - (1 / (k_y + 1)) * population[node]
-                totalContributionMin = (1 / (k_x + 1)) * population[neighborIndex] - (1 / (k_y + 1)) * population[node]
+                totalContributionMax = (1 / (k_x + 1)) - (1 / (k_y + 1)) * population[node]
+                totalContributionMin = -(1 / (k_y + 1)) * population[node]
                 for neighborIndex2 in neighborsIndices2:
                     k_i = len(self.populationDict[neighborIndex2])
-                    totalContribution += (1 / (k_i + 1)) * population[neighborIndex2] - (1 / (k_y + 1)) * population[
-                        node]
+                    totalContribution += (1 / (k_i + 1)) * population[neighborIndex2] - (1 / (k_y + 1)) * population[node]
                     totalContributionMax += (1 / (k_i + 1)) - (1 / (k_y + 1)) * population[node]
                     totalContributionMin += -(1 / (k_y + 1)) * population[node]
 
@@ -146,12 +144,14 @@ class RegularGraph:
         cooperators = np.ones(int(self.populationSize * self.initCooperatorsFraction))
         defectors = np.zeros(int(self.populationSize * (1 - self.initCooperatorsFraction)))
         populationOriginal = np.hstack((cooperators, defectors))
+
         valuesPerGraphs = np.zeros((self.graphNum, 2, (self.graphConnectivity+1)*5 + - 1))  # number of fractions or r
         valuesPerRuns = np.zeros((self.runNum, 2, (self.graphConnectivity+1)*5 + - 1))  # number of fractions of r
         valuesPerGens = np.zeros(self.genNum)
 
-        for r in range(5, (self.graphConnectivity+1)*5+4):
+        for r in range(16, (self.graphConnectivity+1)*5+4):
             self.r = (r/5)
+            ic(r)
 
             for graph in range(self.graphNum):
                 # Create graph representing the population indices (will be used to represent the structure)
@@ -159,7 +159,6 @@ class RegularGraph:
                 self.populationDict = {}
                 for node in populationGraphIndices.nodes():  # for optimality reasons
                     self.populationDict[node] = list(populationGraphIndices.neighbors(node))
-                ic(graph)
 
                 for run in range(self.runNum):
                     # Create and shuffle population (0: D, 1:C)
@@ -186,11 +185,34 @@ class RegularGraph:
         """
         :return: [x_values: their fraction of the total wealth, y_values: number of individuals]
         """
-        # TODO: implement the simulation for the regular graph, to track the evolution of the number of individual
-        #  as a function of their fraction of the total wealth. You are encouraged to divide this function
-        #  into smaller functions
+        populationOriginal = np.ones(int(self.populationSize))
 
-        simulationValuesForRegularGraphWithWealth = np.array([[], []])
+        valuesPerGraphs = np.zeros((self.graphNum, 2, (self.graphConnectivity + 1) * 5 + - 1))  # number of fractions or r
+        valuesPerGens = np.zeros(self.genNum)
+
+        for graph in range(self.graphNum):
+            # Create graph representing the population indices (will be used to represent the structure)
+            populationGraphIndices = nx.random_regular_graph(self.graphConnectivity, self.populationSize)
+            self.populationDict = {}
+            for node in populationGraphIndices.nodes():  # for optimality reasons
+                self.populationDict[node] = list(populationGraphIndices.neighbors(node))
+
+            # Create and shuffle population (0: D, 1:C)
+            population = copy(populationOriginal)
+            random.shuffle(population)
+
+            for _ in range(self.transientGenNum):
+                self.nextGen(population)
+
+            for gen in range(self.genNum):
+                self.nextGen(population)
+                valuesPerGens[gen] = np.count_nonzero(population) / self.populationSize
+
+            valuesPerGraphs[graph, 0] = self.r / (self.graphConnectivity + 1)
+            valuesPerGraphs[graph, 1] = np.mean(valuesPerGens)
+
+        simulationValuesForRegularGraphWithWealth = np.mean(valuesPerGraphs, axis=0)
+        ic(simulationValuesForRegularGraphWithWealth)
         return simulationValuesForRegularGraphWithWealth
 
 
