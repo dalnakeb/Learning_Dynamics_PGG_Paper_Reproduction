@@ -9,19 +9,40 @@ import egttools as egt
 from infiniteWellMixed import InfiniteWellMixed
 from regularGraph import RegularGraph
 from scaleFreeGraph import ScaleFreeGraph
+import matplotlib.pyplot as plt
 
 
 def plotRegularAndScaleFreeGraphs(regularGraphPlotValues: [[int], [int]],
                                   scaleFreeGraphPlotValues: [[int], [int]]):
-    # TODO: implement the graph plotting for both classes of graph the fraction of cooperators as a function of n=r(z+1)
-    pass
+    plt.plot(regularGraphPlotValues[0], regularGraphPlotValues[1])
+    plt.scatter(regularGraphPlotValues[0], regularGraphPlotValues[1], color='red')
+
+    plt.plot(scaleFreeGraphPlotValues[0], scaleFreeGraphPlotValues[1])
+    plt.scatter(scaleFreeGraphPlotValues[0], scaleFreeGraphPlotValues[1], color='blue')
+
+    plt.xlabel('n')
+    plt.ylabel('C fraction')
+    plt.legend()
+    plt.xlim(0.2, 1.2)
+    plt.ylim(0.2, 1.2)
+    plt.show()
 
 
 def plotWealthDistributionForRegularAndScaleFreeGraphs(regularGraphWealthPlotValues: [[int], [int]],
                                                        scaleFreeGraphWealthPlotValues: [[int], [int]]):
-    # TODO: implement the graph for plotting the number of individuals as a function of their fraction
-    #  of the total wealth
-    pass
+    plt.plot(regularGraphWealthPlotValues[0], regularGraphWealthPlotValues[1])
+    plt.scatter(regularGraphWealthPlotValues[0], regularGraphWealthPlotValues[1], color='red')
+
+    plt.plot(scaleFreeGraphWealthPlotValues[0], scaleFreeGraphWealthPlotValues[1])
+    plt.scatter(scaleFreeGraphWealthPlotValues[0], scaleFreeGraphWealthPlotValues[1], color='blue')
+
+    plt.xlabel('Number of individuals')
+    plt.ylabel('Fraction of total wealth')
+    plt.legend()
+    plt.yscale('log')
+    plt.xscale('log')
+    #plt.axis([0.0001, 0.2, 0.01, 1000])
+    plt.show()
 
 
 if __name__ == "__main__":
