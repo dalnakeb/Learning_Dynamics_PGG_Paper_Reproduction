@@ -149,33 +149,34 @@ class RegularGraph:
         valuesPerRuns = np.zeros((self.runNum, 2, (self.graphConnectivity+1)*5 + - 1))  # number of fractions of r
         valuesPerGens = np.zeros(self.genNum)
 
-        for r in range(16, (self.graphConnectivity+1)*5+4):
-            self.r = (r/5)
-            ic(r)
+        #for r in range(21, (self.graphConnectivity+1)*5+4):
+        r = 24
+        self.r = (r/5)
+        ic(r)
 
-            for graph in range(self.graphNum):
-                # Create graph representing the population indices (will be used to represent the structure)
-                populationGraphIndices = nx.random_regular_graph(self.graphConnectivity, self.populationSize)
-                self.populationDict = {}
-                for node in populationGraphIndices.nodes():  # for optimality reasons
-                    self.populationDict[node] = list(populationGraphIndices.neighbors(node))
+        for graph in range(self.graphNum):
+            # Create graph representing the population indices (will be used to represent the structure)
+            populationGraphIndices = nx.random_regular_graph(self.graphConnectivity, self.populationSize)
+            self.populationDict = {}
+            for node in populationGraphIndices.nodes():  # for optimality reasons
+                self.populationDict[node] = list(populationGraphIndices.neighbors(node))
 
-                for run in range(self.runNum):
-                    # Create and shuffle population (0: D, 1:C)
-                    population = copy(populationOriginal)
-                    random.shuffle(population)
+            for run in range(self.runNum):
+                # Create and shuffle population (0: D, 1:C)
+                population = copy(populationOriginal)
+                random.shuffle(population)
+                ic(run)
+                for _ in range(self.transientGenNum):
+                    self.nextGen(population)
 
-                    for _ in range(self.transientGenNum):
-                        self.nextGen(population)
+                for gen in range(self.genNum):
+                    self.nextGen(population)
+                    valuesPerGens[gen] = np.count_nonzero(population) / self.populationSize
 
-                    for gen in range(self.genNum):
-                        self.nextGen(population)
-                        valuesPerGens[gen] = np.count_nonzero(population) / self.populationSize
+                valuesPerRuns[run, 0, r-5] = self.r/(self.graphConnectivity + 1)
+                valuesPerRuns[run, 1, r-5] = np.mean(valuesPerGens)
 
-                    valuesPerRuns[run, 0, r-5] = self.r/(self.graphConnectivity + 1)
-                    valuesPerRuns[run, 1, r-5] = np.mean(valuesPerGens)
-
-                valuesPerGraphs[graph] = np.mean(valuesPerRuns, axis=0)
+            valuesPerGraphs[graph] = np.mean(valuesPerRuns, axis=0)
 
         simulationValuesForRegularGraph = np.mean(valuesPerGraphs, axis=0)
         ic(simulationValuesForRegularGraph)

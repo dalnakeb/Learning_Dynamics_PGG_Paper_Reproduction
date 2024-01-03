@@ -6,11 +6,11 @@ import matplotlib.pyplot as plt
 
 
 if __name__ == "__main__":
-    populationSize = 2*10**1
-    transientGenNum = 3*10**2
-    genNum = 2*10**1
-    graphNum = 2
-    runNum = 5
+    populationSize = 10**2
+    transientGenNum = 7*10**3
+    genNum = 10**1
+    graphNum = 1
+    runNum = 1
     initCooperatorsFraction = 0.5
     averageGraphConnectivity = 4
     contributionValue = 1
@@ -25,9 +25,9 @@ if __name__ == "__main__":
     values = regularGraph.simulate()
 
     plt.plot(values[0], values[1])
+    plt.scatter(values[0], values[1], color='red')
     plt.xlabel('n')
     plt.ylabel('C fraction')
-    plt.title('Plotting Data')
     plt.legend()
     plt.xlim(0.2, 1.2)
     plt.ylim(0.2, 1.2)
