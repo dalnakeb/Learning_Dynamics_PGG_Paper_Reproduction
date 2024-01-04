@@ -165,7 +165,7 @@ class ScaleFreeGraph:
                 for node in populationGraphIndices.nodes():  # for optimality reasons
                     self.neighborsOf[node] = list(populationGraphIndices.neighbors(node))
                 for run in range(self.runNum):
-                    ic(run)
+                    #ic(run)
                     # Create and shuffle population (0: D, 1:C)
                     population = copy(populationOriginal)
                     random.shuffle(population)
@@ -244,13 +244,14 @@ class ScaleFreeGraph:
         for node in self.neighborsOf:
             self.wealthPerIndividual[node] += self.computeFitnessWithWealth(population, node)
 
-    def simulateWithWealth(self) -> np.array([[int], [int]]):
+    def simulateWithWealth(self, contributionModel) -> np.array([[int], [int]]):
         """
         Runs the simulation with an entier population of cooperators and calculating the wealth of each at every run
         :return: [x_values: their fraction of the total wealth, y_values: number of individuals]
         """
         populationOriginal = np.ones(int(self.populationSize))
         self.wealthPerIndividual = np.zeros(int(self.populationSize))
+        self.contributionModel = contributionModel
 
         valuesPerGraphs = np.zeros((self.graphNum, 2, self.populationSize))  # (number of graphs, [n, C fraction], number of fractions or r)
         valuesPerRuns = np.zeros((self.runNum, 2, self.populationSize))  # (number of graphs, [n, C fraction], number of fractions or r)
@@ -269,13 +270,13 @@ class ScaleFreeGraph:
                 # Create and shuffle population (0: D, 1:C)
                 population = copy(populationOriginal)
                 random.shuffle(population)
-                ic(run)
+                #ic(run)
                 for _ in range(self.transientGenNum):
                     self.nextGenWithWealth(population)
 
                 total = np.sum(self.wealthPerIndividual)
                 self.wealthPerIndividual = self.wealthPerIndividual / total
-                fractionOfTotalWealth, numberOfIndividuals = np.unique(np.round(self.wealthPerIndividual, 3), return_counts=True)
+                fractionOfTotalWealth, numberOfIndividuals = np.unique(np.round(self.wealthPerIndividual, 2), return_counts=True)
                 ic(fractionOfTotalWealth)
                 ic(numberOfIndividuals)
 

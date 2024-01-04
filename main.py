@@ -28,11 +28,13 @@ def plotRegularAndScaleFreeGraphs(regularGraphPlotValues: [[int], [int]],
     plt.show()
 
 
-def plotWealthDistributionForRegularAndScaleFreeGraphs(regularGraphWealthPlotValues: [[int], [int]],
-                                                       scaleFreeGraphWealthPlotValues: [[int], [int]]):
+def plotWealthDistributionForRegularAndScaleFreeGraphs(simulationValuesForRegularGraphWithWealthPerGame: [[int],[int]],
+                                                       simulationValuesForScaleFreeGraphWithWealthPerGame: [[int],[int]],
+                                                       simulationValuesForScaleFreeGraphWithWealthPerInd: [[int],[int]]):
     plt.figure(figsize=(8, 6))
-    plt.bar(regularGraphWealthPlotValues[0], regularGraphWealthPlotValues[1], width=0.002, align='center')
-    plt.scatter(scaleFreeGraphWealthPlotValues[0], scaleFreeGraphWealthPlotValues[1], width=0.002, align='center')
+    plt.bar(simulationValuesForRegularGraphWithWealthPerGame[0], simulationValuesForRegularGraphWithWealthPerGame[1], width=0.002, align='center')
+    plt.bar(simulationValuesForScaleFreeGraphWithWealthPerGame[0], simulationValuesForScaleFreeGraphWithWealthPerGame[1], width=0.002, align='center')
+    plt.scatter(simulationValuesForScaleFreeGraphWithWealthPerInd[0], simulationValuesForScaleFreeGraphWithWealthPerInd[1])
     plt.xlabel('Fraction of total wealth')
     plt.ylabel('Number of individuals')
     plt.legend()
@@ -43,8 +45,8 @@ def plotWealthDistributionForRegularAndScaleFreeGraphs(regularGraphWealthPlotVal
 
 
 if __name__ == "__main__":
-    populationSize = 10 ** 3
-    transientGenNum = 10 ** 2
+    populationSize = 5*10 ** 1
+    transientGenNum = 10 ** 4
     genNum = 10 ** 1
     graphNum = 1
     runNum = 6
@@ -64,11 +66,13 @@ if __name__ == "__main__":
     scaleFreeGraph = ScaleFreeGraph(populationSize, transientGenNum, genNum, graphNum, runNum, initCooperatorsFraction,
                                     averageGraphConnectivity, contributionValue, contributionModel)
 
-    simulationValuesForRegularGraph = regularGraph.simulate()
+    """simulationValuesForRegularGraph = regularGraph.simulate()
     simulationValuesForScaleFreeGraph = scaleFreeGraph.simulate()
-    plotRegularAndScaleFreeGraphs(simulationValuesForRegularGraph, simulationValuesForScaleFreeGraph)
+    plotRegularAndScaleFreeGraphs(simulationValuesForRegularGraph, simulationValuesForScaleFreeGraph)"""
 
-    #simulationValuesForRegularGraphWithWealth = regularGraph.simulateWithWealth()
-    #simulationValuesForScaleFreeGraphWithWealth = regularGraph.simulateWithWealth()
-    #plotWealthDistributionForRegularAndScaleFreeGraphs(simulationValuesForRegularGraphWithWealth,
-    #                                                    simulationValuesForScaleFreeGraphWithWealth)
+    simulationValuesForRegularGraphWithWealthPerGame = regularGraph.simulateWithWealth(0)
+    simulationValuesForScaleFreeGraphWithWealthPerGame = scaleFreeGraph.simulateWithWealth(0)
+    simulationValuesForScaleFreeGraphWithWealthPerInd = scaleFreeGraph.simulateWithWealth(1)
+
+    plotWealthDistributionForRegularAndScaleFreeGraphs(simulationValuesForRegularGraphWithWealthPerGame,
+                                                        simulationValuesForScaleFreeGraphWithWealthPerGame, simulationValuesForScaleFreeGraphWithWealthPerInd)
