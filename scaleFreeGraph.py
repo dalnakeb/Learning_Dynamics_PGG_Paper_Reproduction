@@ -46,7 +46,7 @@ class ScaleFreeGraph:
 
     def simulateWithWealth(self) -> np.array([int], [int]):
         """
-        :return: [x_values: their fraction of the total wealth, y_values: number of individuals]
+        :return: [x_values: their fraction of the total wealth, y_values: fraction of individuals]
         """
         # TODO: implement the simulation for the scale free graph, to track the evolution of the number of individual
         #  as a function of their fraction of the total wealth. You are encouraged to divide this function
