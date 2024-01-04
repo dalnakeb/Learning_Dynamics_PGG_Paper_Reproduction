@@ -3,6 +3,9 @@ from copy import copy
 import numpy as np
 from icecream import ic
 import networkx as nx
+from functools import wraps
+
+
 
 
 class RegularGraph:
@@ -145,15 +148,16 @@ class RegularGraph:
         Runs the simulation of the PGG given the parameters on the initiating of the class
         :return: [x_values: n=r/(z+1) renormalized PGG enhancement factor, y_values: fraction of cooperators]
         """
-        cooperators = np.ones(int(self.populationSize * self.initCooperatorsFraction))
-        defectors = np.zeros(int(self.populationSize * (1 - self.initCooperatorsFraction)))
-        populationOriginal = np.hstack((cooperators, defectors))
+        cooperators = [1 for _ in range(int(self.populationSize*self.initCooperatorsFraction))]
+        defectors = [0 for _ in range(int(self.populationSize*(1-self.initCooperatorsFraction)))]
+        populationOriginal = cooperators
+        populationOriginal.extend(defectors)
 
         valuesPerGraphs = np.zeros((self.graphNum, 2, (self.graphConnectivity+1)*5 + - 1))  # (number of graphs, [n, C fraction], number of fractions of r)
         valuesPerRuns = np.zeros((self.runNum, 2, (self.graphConnectivity+1)*5 + - 1))  # (number of graphs, [n, C fraction], number of fractions or r)
         valuesPerGens = np.zeros(self.genNum)
 
-        for r in range(1, (self.graphConnectivity+1)*5+4):
+        for r in range(18, (self.graphConnectivity+1)*5+4):
             self.r = (r/5)
             ic(r)
 
@@ -165,7 +169,7 @@ class RegularGraph:
                 for node in populationGraphIndices.nodes():  # for optimality reasons
                     self.neighborsOf[node] = list(populationGraphIndices.neighbors(node))
                 for run in range(self.runNum):
-                    #ic(run)
+                    ic(run)
                     # Create and shuffle population (0: D, 1:C)
                     population = copy(populationOriginal)
                     random.shuffle(population)
@@ -249,7 +253,7 @@ class RegularGraph:
         Runs the simulation with an entier population of cooperators and calculating the wealth of each at every run
         :return: [x_values: their fraction of the total wealth, y_values: number of individuals]
         """
-        populationOriginal = np.ones(int(self.populationSize))
+        populationOriginal = [1 in range(self.populationSize)]
         self.wealthPerIndividual = np.zeros(int(self.populationSize))
         self.contributionModel = contributionModel
         valuesPerGraphs = np.zeros((self.graphNum, 2, self.populationSize))  # (number of graphs, [n, C fraction], number of fractions or r)
