@@ -9,8 +9,8 @@ class InfiniteWellMixed:
     """
     Class implementing an infinite well mixed population using egttools library. With the option of plotting it.
     """
-    def __init__(self, cooperator: egt.behaviors.NormalForm.TwoActions.Cooperator,
-                 defector: egt.behaviors.NormalForm.TwoActions.Defector, payoffMatrix: [[int], [int]], nbRounds: int):
+    def __init__(self, cooperator: egt.behaviors.NormalForm.TwoActions.Cooperator(),
+                 defector: egt.behaviors.NormalForm.TwoActions.Defector(), payoffMatrix: [[int], [int]], nbRounds: int):
         """
         :param cooperator: cooperator strategy object from egttools
         :param defector: defector strategy object from egttools
@@ -28,15 +28,16 @@ class InfiniteWellMixed:
         :return: [x_values: n=r/(z+1) renormalized PGG enhancement factor, y_values: fraction of cooperators]
         """
         self.payoffMatrix = np.array(self.payoffMatrix)
-        strategies = [egt.behaviors.NormalForm.TwoActions.Cooperator,
-                      egt.behaviors.NormalForm.TwoActions.Defector]
+        strategies = [self.cooperator,
+                      self.defector]
         #strategy_labels = [strategy.type().replace("NFGStrategies::", '') for strategy in strategies]
         valuesPerFractionR = np.zeros(1)
-        ic(self.payoffMatrix)
+
         for r in range(1):
             game = egt.games.NormalFormGame(self.nbRounds, self.payoffMatrix, strategies)
-            ic(game.expected_payoffs())
-            ic(plot_replicator_dynamics_in_simplex(game.expected_payoffs()))
+            fig, ax = plt.subplots(figsize=(10, 8))
+
+            simplex, gradients, roots, roots_xy, stability = plot_replicator_dynamics_in_simplex(game.expected_payoffs(), ax=ax)
 
         simulationValuesForInfiniteWellMixed = np.mean(valuesPerFractionR, axis=0)
         return simulationValuesForInfiniteWellMixed
