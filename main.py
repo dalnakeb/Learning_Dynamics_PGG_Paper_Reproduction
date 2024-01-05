@@ -45,6 +45,10 @@ def plotWealthDistributionForRegularAndScaleFreeGraphs(simulationValuesForRegula
 
 
 if __name__ == "__main__":
+    payoffMatrix = [[0., -1.],
+                     [1., 0.]]
+    nbRounds = 10
+
     populationSize = 5*10 ** 1
     transientGenNum = 10 ** 4
     genNum = 10 ** 1
@@ -55,24 +59,24 @@ if __name__ == "__main__":
     contributionValue = 1
     contributionModel = 0  # (0: cost per game, 1: cost per individual)
 
-    #infiniteWellMixed = InfiniteWellMixed(egt.behaviors.NormalForm.TwoActions.Cooperator(),
-    #                                      egt.behaviors.NormalForm.TwoActions.Defector(), payoffMatrix)
-    #simulationValuesForInfiniteWellMixed = infiniteWellMixed.simulate()
+    infiniteWellMixed = InfiniteWellMixed(egt.behaviors.NormalForm.TwoActions.Cooperator(),
+                                          egt.behaviors.NormalForm.TwoActions.Defector(), payoffMatrix, nbRounds)
+    simulationValuesForInfiniteWellMixed = infiniteWellMixed.simulate()
     #infiniteWellMixed.plot(simulationValuesForInfiniteWellMixed)
 
-    regularGraph = RegularGraph(populationSize, transientGenNum, genNum, graphNum, runNum, initCooperatorsFraction,
+    """regularGraph = RegularGraph(populationSize, transientGenNum, genNum, graphNum, runNum, initCooperatorsFraction,
                                 averageGraphConnectivity, contributionValue, contributionModel)
 
     scaleFreeGraph = ScaleFreeGraph(populationSize, transientGenNum, genNum, graphNum, runNum, initCooperatorsFraction,
-                                    averageGraphConnectivity, contributionValue, contributionModel)
+                                    averageGraphConnectivity, contributionValue, contributionModel)"""
 
     """simulationValuesForRegularGraph = regularGraph.simulate()
     simulationValuesForScaleFreeGraph = scaleFreeGraph.simulate()
     plotRegularAndScaleFreeGraphs(simulationValuesForRegularGraph, simulationValuesForScaleFreeGraph)"""
 
-    simulationValuesForRegularGraphWithWealthPerGame = regularGraph.simulateWithWealth(0)
+    """simulationValuesForRegularGraphWithWealthPerGame = regularGraph.simulateWithWealth(0)
     simulationValuesForScaleFreeGraphWithWealthPerGame = scaleFreeGraph.simulateWithWealth(0)
-    simulationValuesForScaleFreeGraphWithWealthPerInd = scaleFreeGraph.simulateWithWealth(1)
+    simulationValuesForScaleFreeGraphWithWealthPerInd = scaleFreeGraph.simulateWithWealth(1)"""
 
-    plotWealthDistributionForRegularAndScaleFreeGraphs(simulationValuesForRegularGraphWithWealthPerGame,
-                                                        simulationValuesForScaleFreeGraphWithWealthPerGame, simulationValuesForScaleFreeGraphWithWealthPerInd)
+    #plotWealthDistributionForRegularAndScaleFreeGraphs(simulationValuesForRegularGraphWithWealthPerGame,
+    #                                                    simulationValuesForScaleFreeGraphWithWealthPerGame, simulationValuesForScaleFreeGraphWithWealthPerInd)

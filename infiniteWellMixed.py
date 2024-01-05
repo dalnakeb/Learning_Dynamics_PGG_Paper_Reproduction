@@ -1,4 +1,8 @@
 import egttools as egt
+from egttools.plotting.simplified import plot_replicator_dynamics_in_simplex
+import numpy as np
+import matplotlib.pyplot as plt
+from icecream import ic
 
 
 class InfiniteWellMixed:
@@ -6,7 +10,7 @@ class InfiniteWellMixed:
     Class implementing an infinite well mixed population using egttools library. With the option of plotting it.
     """
     def __init__(self, cooperator: egt.behaviors.NormalForm.TwoActions.Cooperator,
-                 defector: egt.behaviors.NormalForm.TwoActions.Defector, payoffMatrix: [[int]]):
+                 defector: egt.behaviors.NormalForm.TwoActions.Defector, payoffMatrix: [[int], [int]], nbRounds: int):
         """
         :param cooperator: cooperator strategy object from egttools
         :param defector: defector strategy object from egttools
@@ -15,19 +19,27 @@ class InfiniteWellMixed:
         self.cooperator = cooperator
         self.defector = defector
         self.payoffMatrix = payoffMatrix
+        self.nbRounds = nbRounds
 
-        # TODO: initialize more attributes if needed
-
-    def simulate(self, nbRounds: int) -> egt.games.NormalFormGame:
+    def simulate(self) -> np.array([[int],[int]]):
         """
         runs a simulation given 2 strategies (Cooperator and Defector) in an infinite well mixed population and a
         payoff matrix.
-        :param nbRounds: number of rounds to run in the simulation
-        :return: a normal form game state after the simulation
+        :return: [x_values: n=r/(z+1) renormalized PGG enhancement factor, y_values: fraction of cooperators]
         """
-        # TODO: run the simulation with nbRounds rounds. You are encouraged to divide this
-        #  function into smaller function
-        pass
+        self.payoffMatrix = np.array(self.payoffMatrix)
+        strategies = [egt.behaviors.NormalForm.TwoActions.Cooperator,
+                      egt.behaviors.NormalForm.TwoActions.Defector]
+        #strategy_labels = [strategy.type().replace("NFGStrategies::", '') for strategy in strategies]
+        valuesPerFractionR = np.zeros(1)
+        ic(self.payoffMatrix)
+        for r in range(1):
+            game = egt.games.NormalFormGame(self.nbRounds, self.payoffMatrix, strategies)
+            ic(game.expected_payoffs())
+            ic(plot_replicator_dynamics_in_simplex(game.expected_payoffs()))
+
+        simulationValuesForInfiniteWellMixed = np.mean(valuesPerFractionR, axis=0)
+        return simulationValuesForInfiniteWellMixed
 
     def plot(self, game: egt.games.NormalFormGame):
         """
