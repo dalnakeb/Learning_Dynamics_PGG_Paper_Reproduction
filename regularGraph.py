@@ -15,7 +15,6 @@ class RegularGraph:
     def __init__(self, populationSize: int, transientGenNum: int, genNum: int, graphNum: int, runNum: int,
                  initCooperatorsFraction: float,
                  graphConnectivity: int,
-                 contributionValue: int,
                  contributionModel: int):
         """
         :param populationSize:  number of nodes in the graph
@@ -25,7 +24,6 @@ class RegularGraph:
         :param runNum:  number of runs for each instance of a graph
         :param initCooperatorsFraction:  initial cooperators fraction in the population
         :param graphConnectivity:  graph connectivity
-        :param contributionValue:  contribution value
         :param contributionModel: (0: cost per game, 1: cost per individual)
         """
         self.populationSize = populationSize
@@ -35,7 +33,6 @@ class RegularGraph:
         self.runNum = runNum
         self.initCooperatorsFraction = initCooperatorsFraction
         self.graphConnectivity = graphConnectivity
-        self.contributionValue = contributionValue
         self.contributionModel = contributionModel
 
         self.r = 1
@@ -157,7 +154,7 @@ class RegularGraph:
         valuesPerRuns = np.zeros((self.runNum, 2, (self.graphConnectivity+1)*5 + - 1))  # (number of graphs, [n, C fraction], number of fractions or r)
         valuesPerGens = np.zeros(self.genNum)
 
-        for r in range(18, (self.graphConnectivity+1)*5+4):
+        for r in range(1, (self.graphConnectivity+1)*5+4):
             self.r = (r/5)
             ic(r)
 
@@ -169,7 +166,6 @@ class RegularGraph:
                 for node in populationGraphIndices.nodes():  # for optimality reasons
                     self.neighborsOf[node] = list(populationGraphIndices.neighbors(node))
                 for run in range(self.runNum):
-                    ic(run)
                     # Create and shuffle population (0: D, 1:C)
                     population = copy(populationOriginal)
                     random.shuffle(population)
@@ -253,7 +249,7 @@ class RegularGraph:
         Runs the simulation with an entier population of cooperators and calculating the wealth of each at every run
         :return: [x_values: their fraction of the total wealth, y_values: number of individuals]
         """
-        populationOriginal = [1 in range(self.populationSize)]
+        populationOriginal = [1 for _ in range(self.populationSize)]
         self.wealthPerIndividual = np.zeros(int(self.populationSize))
         self.contributionModel = contributionModel
         valuesPerGraphs = np.zeros((self.graphNum, 2, self.populationSize))  # (number of graphs, [n, C fraction], number of fractions or r)

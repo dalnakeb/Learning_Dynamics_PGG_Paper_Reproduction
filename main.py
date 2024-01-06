@@ -3,10 +3,6 @@ Authors: Alnakeb Derar, Caiola Ludovica, Correa Catalina, Andres Antelo
 Description: Reproducing the results and experimentation conducted in the scientific paper: "Social Diversity Promotes
 The Emergence Of Cooperation In Public Goods Games".
 """
-import numpy as np
-from icecream import ic
-import egttools as egt
-from infiniteWellMixed import InfiniteWellMixed
 from regularGraph import RegularGraph
 from scaleFreeGraph import ScaleFreeGraph
 import matplotlib.pyplot as plt
@@ -23,10 +19,9 @@ def plotRegularAndScaleFreeGraphs(regularGraphPlotValues: [[int], [int]],
     plt.xlabel('n')
     plt.ylabel('C fraction')
     plt.legend()
-    plt.xlim(0.2, 1.2)
-    plt.ylim(0.2, 1.2)
+    plt.xlim(-0.1, 1.2)
+    plt.ylim(-0.1, 1.2)
     plt.show()
-
 
 def plotWealthDistributionForRegularAndScaleFreeGraphs(simulationValuesForRegularGraphWithWealthPerGame: [[int],[int]],
                                                        simulationValuesForScaleFreeGraphWithWealthPerGame: [[int],[int]],
@@ -45,34 +40,26 @@ def plotWealthDistributionForRegularAndScaleFreeGraphs(simulationValuesForRegula
 
 
 if __name__ == "__main__":
-    payoffMatrix = [[0., -1.],
-                     [1., 0.]]
-    nbRounds = 10
-
-    populationSize = 5*10 ** 1
-    transientGenNum = 10 ** 4
+    populationSize = 5*10 ** 2
+    transientGenNum = 5*10 ** 2
     genNum = 10 ** 1
-    graphNum = 1
-    runNum = 6
+    graphNum = 5
+    runNum = 2
     initCooperatorsFraction = 0.5
     averageGraphConnectivity = 4
-    contributionValue = 1
-    contributionModel = 0  # (0: cost per game, 1: cost per individual)
+    contributionModel = 1  # (0: cost per game, 1: cost per individual)
 
-    infiniteWellMixed = InfiniteWellMixed(egt.behaviors.NormalForm.TwoActions.Cooperator(),
-                                          egt.behaviors.NormalForm.TwoActions.Defector(), payoffMatrix, nbRounds)
-    simulationValuesForInfiniteWellMixed = infiniteWellMixed.simulate()
-    #infiniteWellMixed.plot(simulationValuesForInfiniteWellMixed)
 
-    """regularGraph = RegularGraph(populationSize, transientGenNum, genNum, graphNum, runNum, initCooperatorsFraction,
-                                averageGraphConnectivity, contributionValue, contributionModel)
+    regularGraph = RegularGraph(populationSize, transientGenNum, genNum, graphNum, runNum, initCooperatorsFraction,
+                                averageGraphConnectivity, contributionModel)
 
     scaleFreeGraph = ScaleFreeGraph(populationSize, transientGenNum, genNum, graphNum, runNum, initCooperatorsFraction,
-                                    averageGraphConnectivity, contributionValue, contributionModel)"""
+                                    averageGraphConnectivity, contributionModel)
 
-    """simulationValuesForRegularGraph = regularGraph.simulate()
+    simulationValuesForRegularGraph = regularGraph.simulate()
     simulationValuesForScaleFreeGraph = scaleFreeGraph.simulate()
-    plotRegularAndScaleFreeGraphs(simulationValuesForRegularGraph, simulationValuesForScaleFreeGraph)"""
+
+    plotRegularAndScaleFreeGraphs(simulationValuesForRegularGraph, simulationValuesForScaleFreeGraph)
 
     """simulationValuesForRegularGraphWithWealthPerGame = regularGraph.simulateWithWealth(0)
     simulationValuesForScaleFreeGraphWithWealthPerGame = scaleFreeGraph.simulateWithWealth(0)

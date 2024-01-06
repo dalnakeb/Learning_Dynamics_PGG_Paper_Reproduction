@@ -12,7 +12,6 @@ class ScaleFreeGraph:
     def __init__(self, populationSize: int, transientGenNum: int, genNum: int, graphNum: int, runNum: int,
                  initCooperatorsFraction: float,
                  averageGraphConnectivity: int,
-                 contributionValue: int,
                  contributionModel: int):
         """
         :param populationSize:  number of nodes in the graph
@@ -22,7 +21,6 @@ class ScaleFreeGraph:
         :param runNum:  number of runs for each instance of a graph
         :param initCooperatorsFraction:  initial cooperators fraction in the population
         :param averageGraphConnectivity:  graph connectivity
-        :param contributionValue:  contribution value
         :param contributionModel: (0: cost per game, 1: cost per individual)
         """
         self.populationSize = populationSize
@@ -32,7 +30,6 @@ class ScaleFreeGraph:
         self.runNum = runNum
         self.initCooperatorsFraction = initCooperatorsFraction
         self.averageGraphConnectivity = averageGraphConnectivity
-        self.contributionValue = contributionValue
         self.contributionModel = contributionModel
 
         self.r = 1
@@ -154,7 +151,7 @@ class ScaleFreeGraph:
         valuesPerRuns = np.zeros((self.runNum, 2, (self.averageGraphConnectivity + 1) * 5 + - 1))  # (number of graphs, [n, C fraction], number of fractions or r)
         valuesPerGens = np.zeros(self.genNum)
 
-        for r in range(17, (self.averageGraphConnectivity + 1) * 5 + 4):
+        for r in range(1, (self.averageGraphConnectivity + 1) * 5 + 4):
             self.r = (r/5)
             ic(r)
 
@@ -165,12 +162,11 @@ class ScaleFreeGraph:
                 self.neighborsOf = {}
                 for node in populationGraphIndices.nodes():  # for optimality reasons
                     self.neighborsOf[node] = list(populationGraphIndices.neighbors(node))
+
                 for run in range(self.runNum):
-                    #ic(run)
                     # Create and shuffle population (0: D, 1:C)
                     population = copy(populationOriginal)
                     random.shuffle(population)
-
                     for _ in range(self.transientGenNum):
                         self.nextGen(population)
 
@@ -277,7 +273,7 @@ class ScaleFreeGraph:
 
                 total = np.sum(self.wealthPerIndividual)
                 self.wealthPerIndividual = self.wealthPerIndividual / total
-                fractionOfTotalWealth, numberOfIndividuals = np.unique(np.round(self.wealthPerIndividual, 2), return_counts=True)
+                fractionOfTotalWealth, numberOfIndividuals = np.unique(np.round(self.wealthPerIndividual, 3), return_counts=True)
                 ic(fractionOfTotalWealth)
                 ic(numberOfIndividuals)
 
